@@ -16,11 +16,11 @@ class Model(nn.Module):
             self.model = None
 
     def forward(self, x, t):
-        return NotImplemented
+        return self.model(x, t)
 
-class MLP(Model):
+class MLP(nn.Module):
     def __init__(self, cfg):
-        super().__init__(cfg)
+        super().__init__()
         self.cfg = cfg
         self.input_dim = self.cfg.input_dim
         self.output_dim = self.cfg.output_dim
@@ -33,9 +33,9 @@ class MLP(Model):
             *(
                 nn.Linear(self.hidden_dim, self.hidden_dim),
                 nn.GELU()
-            ) * self.hidden_layers
+            ) * self.hidden_layers,
+            nn.Linear(self.hidden_dim, self.output_dim)
         )
-        nn.Linear(self.hidden_dim, self.output_dim)
 
     def forward(self, x, t):
         # Generate a tensor filled with the value of `t`

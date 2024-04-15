@@ -34,10 +34,10 @@ class NoiseScheduler:
             self.betas * (1.0 - self.alphas_cumprod_prev) / (1.0 - self.alphas_cumprod)
         )
 
-    def add_noise(self, x_0, t, eps_calc):
+    def add_noise(self, x_0, t, eps_target):
         mu = self.coef_noise_mu[t] * x_0
         sigma = self.coef_noise_sigma[t]
-        return mu + sigma * eps_calc
+        return mu + sigma * eps_target
 
     def remove_noise(self, x_t, t, eps_pred):
         mu = self.coef_denoise_mu_1[t] * x_t - self.coef_denoise_mu_2[t] * eps_pred

@@ -15,22 +15,35 @@ def get_dataset(cfg):
 
     # TODO: process the data as needed
 
-    x = torch.from_numpy(np.stack((x, y), axis=1))
+    x = torch.from_numpy(np.stack((x, y), axis=1)).float()
 
     return TensorDataset(x)
 
-def train(cfg):
 
+def train(cfg, dl, model, opt, criterion, ns):
     for epoch in range(cfg.epochs):
-
+        train_loss = 0.0
+        for batch in dl:
+            opt.zero_grad()
+            batch = batch[0]
+            t = np.random.randint(0, cfg.timesteps)
+            eps_target = torch.randn_like(batch)
+            x_t_1 = ns.add_noise(batch, t, eps_target)
+            eps_pred = model(x_t_1, t)
+            loss = criterion(eps_pred, eps_target)
+            loss.backward()
+            opt.step()
+            train_loss += loss.item()
+        train_loss /= len(dl)
+        print("epoch: {} | loss: {}".format(epoch, train_loss))
 
 
 def main(cfg):
     # Preliminaries
-    torch.set_random_seed(cfg.seed)
+    torch.manual_seed(cfg.seed)
 
     # Initialize the dataloader
-    ds = Dataset(cfg)
+    ds = get_dataset(cfg)
     dl = DataLoader(ds)
 
     # Initialize the model
@@ -45,9 +58,13 @@ def main(cfg):
     ns = NoiseScheduler(cfg)
 
     # Train the model
-    train(cfg, dl, model)
+    train(cfg, dl, model, opt, criterion, ns)
 
     print("Training completed!")
+
+class Config:
+    def __init__(self, d):
+        self.__dict__.update(d)
 
 
 if __name__ == "__main__":
@@ -66,7 +83,7 @@ if __name__ == "__main__":
 
         # model_params
         "model": "MLP", # denoiser
-        "input_dims": 3,
+        "input_dim": 3,
         "hidden_dim": 8,
         "output_dim": 2,
         "hidden_layers": 3,
@@ -79,5 +96,7 @@ if __name__ == "__main__":
         "beta_end": 1e-2,
         "timesteps": 50,
     }
+
+    cfg = Config(cfg)
 
     main(cfg)
