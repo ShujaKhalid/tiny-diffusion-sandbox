@@ -77,7 +77,7 @@ if __name__ == "__main__":
         "csv_file": "assets/simple/cat.csv",
     
         # opt_params
-        "epochs": 10,
+        "epochs": 500,
         "batch_size": 32,
         "lr": 1e-3,
 
