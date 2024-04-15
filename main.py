@@ -5,7 +5,7 @@ from noise_scheduler import NoiseScheduler
 
 import pandas as pd
 import numpy as np
-
+from utils import Config
 
 def get_dataset(cfg):
     fn = cfg.csv_file
@@ -37,6 +37,8 @@ def train(cfg, dl, model, opt, criterion, ns):
         train_loss /= len(dl)
         print("epoch: {} | loss: {}".format(epoch, train_loss))
 
+    torch.save(model.state_dict(), cfg.log_dir + "params.pt")
+    print(f"saving model to {cfg.log_dir}")
 
 def main(cfg):
     # Preliminaries
@@ -44,7 +46,7 @@ def main(cfg):
 
     # Initialize the dataloader
     ds = get_dataset(cfg)
-    dl = DataLoader(ds)
+    dl = DataLoader(ds, batch_size=cfg.batch_size, shuffle=True)
 
     # Initialize the model
     model = Model(cfg).cuda()
@@ -61,10 +63,6 @@ def main(cfg):
     train(cfg, dl, model, opt, criterion, ns)
 
     print("Training completed!")
-
-class Config:
-    def __init__(self, d):
-        self.__dict__.update(d)
 
 
 if __name__ == "__main__":
