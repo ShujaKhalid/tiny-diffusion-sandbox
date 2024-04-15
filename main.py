@@ -30,11 +30,18 @@ def main(cfg):
 
     # Initialize the dataloader
     ds = Dataset(cfg)
-    dl = DataLoader(cfg, ds)
+    dl = DataLoader(ds)
 
     # Initialize the model
     model = Model(cfg)
     model.train()
+
+    # Initialize the optimizer
+    opt = torch.optim.Adam(model.parameters(), lr=cfg.lr)
+    criterion = torch.nn.MSELoss()
+
+    # Initialize the noise_scheduler
+    ns =
 
     # Train the model
     train(cfg, dl, model)
@@ -62,6 +69,11 @@ if __name__ == "__main__":
 
         # output_params
         "log_dir": "./logs/",
+
+        # noise_scheduler
+        "beta_start": 1e-5,
+        "beta_end": 1e-2,
+        "timesteps": 50,
     }
 
     main(cfg)
