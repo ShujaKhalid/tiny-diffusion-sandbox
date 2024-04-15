@@ -15,7 +15,7 @@ def get_dataset(cfg):
 
     # TODO: process the data as needed
 
-    x = torch.from_numpy(np.stack((x, y), axis=1)).float()
+    x = torch.from_numpy(np.stack((x, y), axis=1)).float().cuda()
 
     return TensorDataset(x)
 
@@ -47,7 +47,7 @@ def main(cfg):
     dl = DataLoader(ds)
 
     # Initialize the model
-    model = Model(cfg)
+    model = Model(cfg).cuda()
     model.train()
 
     # Initialize the optimizer
@@ -77,14 +77,14 @@ if __name__ == "__main__":
         "csv_file": "assets/simple/cat.csv",
     
         # opt_params
-        "epochs": 500,
+        "epochs": 5,
         "batch_size": 32,
         "lr": 1e-3,
 
         # model_params
         "model": "MLP", # denoiser
         "input_dim": 3,
-        "hidden_dim": 8,
+        "hidden_dim": 64,
         "output_dim": 2,
         "hidden_layers": 3,
 

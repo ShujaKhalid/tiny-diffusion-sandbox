@@ -40,7 +40,7 @@ class MLP(nn.Module):
     def forward(self, x, t):
         # Generate a tensor filled with the value of `t`
         # that is of the same size as the x tensor
-        t_fill = torch.full((x.shape[0], 1), t)
+        t_fill = torch.full((x.shape[0], 1), t).cuda()
         x = torch.cat((x, t_fill), axis=-1)
         return self.model(x)
 
