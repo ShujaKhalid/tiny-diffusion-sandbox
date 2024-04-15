@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import DataLoader, Dataset, TensorDataset
 from model import Model
+from noise_scheduler import NoiseScheduler
 
 import pandas as pd
 import numpy as np
@@ -41,7 +42,7 @@ def main(cfg):
     criterion = torch.nn.MSELoss()
 
     # Initialize the noise_scheduler
-    ns =
+    ns = NoiseScheduler(cfg)
 
     # Train the model
     train(cfg, dl, model)
@@ -55,6 +56,9 @@ if __name__ == "__main__":
     cfg = {
         "seed": 0,
 
+        # data
+        "csv_file": "assets/simple/cat.csv",
+    
         # opt_params
         "epochs": 10,
         "batch_size": 32,
