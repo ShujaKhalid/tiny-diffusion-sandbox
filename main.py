@@ -28,8 +28,8 @@ def train(cfg, dl, model, opt, criterion, ns):
             batch = batch[0]
             t = np.random.randint(0, cfg.timesteps)
             eps_target = torch.randn_like(batch)
-            x_t_1 = ns.add_noise(batch, t, eps_target)
-            eps_pred = model(x_t_1, t)
+            x_new = ns.add_noise(batch, t, eps_target)
+            eps_pred = model(x_new, t)
             loss = criterion(eps_pred, eps_target)
             loss.backward()
             opt.step()
