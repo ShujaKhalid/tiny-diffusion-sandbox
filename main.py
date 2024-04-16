@@ -6,6 +6,7 @@ from noise_scheduler import NoiseScheduler
 import pandas as pd
 import numpy as np
 from utils import Config
+from config import Config
 
 def get_dataset(cfg):
     fn = cfg.csv_file
@@ -35,7 +36,7 @@ def train(cfg, dl, model, opt, criterion, ns):
             opt.step()
             train_loss += loss.item()
         train_loss /= len(dl)
-        print("epoch: {} | loss: {}".format(epoch, train_loss))
+        print("epoch: {} | loss: {}".format(epoch+1, train_loss))
 
     torch.save(model.state_dict(), cfg.log_dir + "params.pt")
     print(f"saving model to {cfg.log_dir}")
@@ -66,35 +67,5 @@ def main(cfg):
 
 
 if __name__ == "__main__":
-
-    # Extract configuration parameters here
-    cfg = {
-        "seed": 0,
-
-        # data
-        "csv_file": "assets/simple/cat.csv",
-    
-        # opt_params
-        "epochs": 5,
-        "batch_size": 32,
-        "lr": 1e-3,
-
-        # model_params
-        "model": "MLP", # denoiser
-        "input_dim": 3,
-        "hidden_dim": 64,
-        "output_dim": 2,
-        "hidden_layers": 3,
-
-        # output_params
-        "log_dir": "./logs/",
-
-        # noise_scheduler
-        "beta_start": 1e-5,
-        "beta_end": 1e-2,
-        "timesteps": 50,
-    }
-
-    cfg = Config(cfg)
-
+    cfg = Config()
     main(cfg)
