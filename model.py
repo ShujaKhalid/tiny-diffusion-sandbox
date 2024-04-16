@@ -31,9 +31,12 @@ class MLP(nn.Module):
             nn.Linear(self.input_dim, self.hidden_dim),
             nn.GELU(),
             *(
-                nn.Linear(self.hidden_dim, self.hidden_dim),
-                nn.GELU()
-            ) * self.hidden_layers,
+                [
+                    nn.Linear(self.hidden_dim, self.hidden_dim),
+                    nn.GELU()
+                ]
+                * self.hidden_layers
+            ),
             nn.Linear(self.hidden_dim, self.output_dim)
         )
 
@@ -41,7 +44,7 @@ class MLP(nn.Module):
         # Generate a tensor filled with the value of `t`
         # that is of the same size as the x tensor
         t_fill = torch.full((x.shape[0], 1), t).cuda()
-        x = torch.cat((x, t_fill), axis=-1)
+        x = torch.cat((x, t_fill), dim=-1)
         return self.model(x)
 
 

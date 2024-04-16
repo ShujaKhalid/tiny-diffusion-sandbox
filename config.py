@@ -5,7 +5,8 @@ class Config(object):
             "seed": 0,
 
             # data
-            "csv_file": "assets/simple/panda.csv",
+            "csv_file": "assets/simple/cat.csv",
+            "dataset_size": 1000,
 
             # opt_params
             "epochs": 1000,
@@ -17,7 +18,7 @@ class Config(object):
             "input_dim": 3,
             "hidden_dim": 64,
             "output_dim": 2,
-            "hidden_layers": 2,
+            "hidden_layers": 3,
 
             # output_params
             "log_dir": "./logs/",

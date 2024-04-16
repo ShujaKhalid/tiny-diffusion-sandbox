@@ -1,42 +1,22 @@
 import torch
-from torch.utils.data import DataLoader, Dataset, TensorDataset
+from torch.utils.data import DataLoader
 from model import Model
 from noise_scheduler import NoiseScheduler
 
-import pandas as pd
 import numpy as np
-from utils import Config
 from config import Config
 
-def get_dataset(cfg, e=0.01):
-    fn = cfg.csv_file
-    df = pd.read_csv(fn)
-    x = df["x"]
-    y = df["y"]
-
-    # TODO: process the data as needed
-    x = (x - x.mean()) / x.std()
-    y = (y - y.mean()) / y.std()
-
-    idx = np.random.randint(0, len(x), size=len(x))
-    x = x.iloc[idx]
-    y = y.iloc[idx]
-
-    x += np.random.normal(len(x)) * e
-    y += np.random.normal(len(y)) * e
-
-    x = torch.from_numpy(np.stack((x, y), axis=1)).float().cuda()
-
-    return TensorDataset(x)
+from utils import get_dataset
 
 
-def train(cfg, dl, model, opt, criterion, ns):
+def train(cfg, ds, dl, model, opt, criterion, ns):
     for epoch in range(cfg.epochs):
+        model.train()
         train_loss = 0.0
         for batch in dl:
             batch = batch[0]
             t = np.random.randint(0, cfg.timesteps)
-            eps_target = torch.randn_like(batch)
+            eps_target = torch.randn(batch.shape).cuda()
             x_new = ns.add_noise(batch, t, eps_target)
             eps_pred = model(x_new, t)
             loss = criterion(eps_pred, eps_target)
@@ -44,7 +24,7 @@ def train(cfg, dl, model, opt, criterion, ns):
             loss.backward()
             opt.step()
             train_loss += loss.item()
-        train_loss /= (len(dl))
+        train_loss /= (len(ds))
         print("epoch: {} | loss: {}".format(epoch+1, train_loss))
 
     torch.save(model.state_dict(), cfg.log_dir + "params.pt")
@@ -61,7 +41,6 @@ def main(cfg):
 
     # Initialize the model
     model = Model(cfg).cuda()
-    model.train()
 
     # Initialize the optimizer
     opt = torch.optim.Adam(model.parameters(), lr=cfg.lr)
@@ -71,7 +50,7 @@ def main(cfg):
     ns = NoiseScheduler(cfg)
 
     # Train the model
-    train(cfg, dl, model, opt, criterion, ns)
+    train(cfg, ds, dl, model, opt, criterion, ns)
 
     print("Training completed!")
 
