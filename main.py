@@ -8,13 +8,22 @@ import numpy as np
 from utils import Config
 from config import Config
 
-def get_dataset(cfg):
+def get_dataset(cfg, e=0.01):
     fn = cfg.csv_file
     df = pd.read_csv(fn)
     x = df["x"]
     y = df["y"]
 
     # TODO: process the data as needed
+    x = (x - x.mean()) / x.std()
+    y = (y - y.mean()) / y.std()
+
+    idx = np.random.randint(0, len(x), size=len(x))
+    x = x.iloc[idx]
+    y = y.iloc[idx]
+
+    x += np.random.normal(len(x)) * e
+    y += np.random.normal(len(y)) * e
 
     x = torch.from_numpy(np.stack((x, y), axis=1)).float().cuda()
 
@@ -25,21 +34,22 @@ def train(cfg, dl, model, opt, criterion, ns):
     for epoch in range(cfg.epochs):
         train_loss = 0.0
         for batch in dl:
-            opt.zero_grad()
             batch = batch[0]
             t = np.random.randint(0, cfg.timesteps)
             eps_target = torch.randn_like(batch)
             x_new = ns.add_noise(batch, t, eps_target)
             eps_pred = model(x_new, t)
             loss = criterion(eps_pred, eps_target)
+            opt.zero_grad()
             loss.backward()
             opt.step()
             train_loss += loss.item()
-        train_loss /= len(dl)
+        train_loss /= (len(dl))
         print("epoch: {} | loss: {}".format(epoch+1, train_loss))
 
     torch.save(model.state_dict(), cfg.log_dir + "params.pt")
     print(f"saving model to {cfg.log_dir}")
+
 
 def main(cfg):
     # Preliminaries
@@ -55,7 +65,7 @@ def main(cfg):
 
     # Initialize the optimizer
     opt = torch.optim.Adam(model.parameters(), lr=cfg.lr)
-    criterion = torch.nn.MSELoss()
+    criterion = torch.nn.MSELoss(reduction="sum")
 
     # Initialize the noise_scheduler
     ns = NoiseScheduler(cfg)

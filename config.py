@@ -5,19 +5,19 @@ class Config(object):
             "seed": 0,
 
             # data
-            "csv_file": "assets/simple/cat.csv",
+            "csv_file": "assets/simple/panda.csv",
 
             # opt_params
-            "epochs": 500,
-            "batch_size": 128,
-            "lr": 1e-5,
+            "epochs": 1000,
+            "batch_size": 64,
+            "lr": 1e-3,
 
             # model_params
             "model": "MLP",  # denoiser
             "input_dim": 3,
             "hidden_dim": 64,
             "output_dim": 2,
-            "hidden_layers": 3,
+            "hidden_layers": 2,
 
             # output_params
             "log_dir": "./logs/",
@@ -25,7 +25,7 @@ class Config(object):
             # noise_scheduler
             "beta_start": 1e-5,
             "beta_end": 1e-2,
-            "timesteps": 5000,
+            "timesteps": 50,
         })
 
 

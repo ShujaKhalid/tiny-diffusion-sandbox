@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
 
 def viz_samples(samples, alpha: float = 0.3, figsize: int = 4, l: float = 2.5) -> None:
     fig, ax = plt.subplots(figsize=(figsize, figsize))
