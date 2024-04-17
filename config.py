@@ -6,19 +6,19 @@ class Config(object):
 
             # data
             "csv_file": "assets/simple/cat.csv",
-            "dataset_size": 200,
+            "dataset_size": 10000,
 
             # opt_params
-            "epochs": 1000,
-            "batch_size": 1024,
-            "lr": 1e-3,
+            "epochs": 100,
+            "batch_size": 128,
+            "lr": 2.5e-3,
 
             # model_params
             "model": "MLP",  # denoiser
-            "input_dim": 3,
-            "hidden_dim": 32,
+            "input_dim": 3,  # FIXED
+            "hidden_dim": 64,
             "output_dim": 2,
-            "hidden_layers": 4,
+            "hidden_layers": 2,
 
             # output_params
             "log_dir": "./logs/",
