@@ -18,7 +18,7 @@ class Config(object):
             "input_dim": 3,
             "hidden_dim": 64,
             "output_dim": 2,
-            "hidden_layers": 3,
+            "hidden_layers": 2,
 
             # output_params
             "log_dir": "./logs/",

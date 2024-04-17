@@ -24,9 +24,10 @@ def get_dataset(cfg, e=0.01):
     x += np.random.normal(size=len(x)) * e
     y += np.random.normal(size=len(y)) * e
 
-    X = torch.from_numpy(np.stack((x, y), axis=1)).float().cuda()
+    X = np.stack((x, y), axis=1)
+    X = TensorDataset(torch.from_numpy(X.astype(np.float32)).cuda())
 
-    return TensorDataset(X)
+    return X
 
 
 def viz_sample(data, alpha: float = 0.3, figsize: int = 4, l: float = 2.5) -> None:

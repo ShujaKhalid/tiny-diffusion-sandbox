@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
-from model import Model
+from model import MLP
 from noise_scheduler import NoiseScheduler
 
 import numpy as np
@@ -33,14 +33,15 @@ def train(cfg, ds, dl, model, opt, criterion, ns):
 
 def main(cfg):
     # Preliminaries
+    np.random.seed(cfg.seed)
     torch.manual_seed(cfg.seed)
 
     # Initialize the dataloader
     ds = get_dataset(cfg)
-    dl = DataLoader(ds, batch_size=cfg.batch_size, shuffle=True)
+    dl = DataLoader(ds, batch_size=cfg.batch_size, shuffle=True, drop_last=True)
 
     # Initialize the model
-    model = Model(cfg).cuda()
+    model = MLP(cfg).cuda()
 
     # Initialize the optimizer
     opt = torch.optim.Adam(model.parameters(), lr=cfg.lr)

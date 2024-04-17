@@ -2,16 +2,14 @@ import torch
 import torch.nn as nn
 
 import numpy as np
+from dataclasses import dataclass
 
-
+@dataclass(eq=False, repr=False)
 class NoiseScheduler:
     def __init__(self, cfg):
-        self.cfg = cfg
-        self.num_timesteps = self.cfg.timesteps
-        self.beta_start = self.cfg.beta_start
-        self.beta_end = self.cfg.beta_end
-
-        self.betas = torch.linspace(self.beta_start, self.beta_end, self.num_timesteps)
+        super().__init__()
+        # compute parameters
+        self.betas = torch.linspace(cfg.beta_start, cfg.beta_end, cfg.timesteps)
         self.alphas = 1 - self.betas
         self.alphas_cumprod = torch.cumprod(self.alphas, axis=0)
         self.alphas_cumprod_prev = nn.functional.pad(
@@ -39,12 +37,10 @@ class NoiseScheduler:
         sigma = self.coef_noise_sigma[t]
         return mu + sigma * eps_target
 
-    def remove_noise(self, x_t, t, eps_pred):
+    def remove_noise(self, x_t, eps_pred, t):
         mu = self.coef_denoise_mu_1[t] * x_t - self.coef_denoise_mu_2[t] * eps_pred
         sigma = self.coef_denoise_sigma[t]
-        z = torch.rand_like(eps_pred)
+        z = torch.randn_like(eps_pred)
         return mu + sigma * z
-
-
 
 
