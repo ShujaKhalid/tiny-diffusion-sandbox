@@ -9,8 +9,8 @@ class Config(object):
             "dataset_size": 10000,
 
             # opt_params
-            "epochs": 100,
-            "batch_size": 128,
+            "epochs": 1000,
+            "batch_size": 32,
             "lr": 2.5e-3,
 
             # model_params
